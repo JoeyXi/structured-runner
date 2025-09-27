@@ -1,0 +1,3 @@
+import { stripCodeFences } from './fences';
+export function safeJsonParse<T=any>(s:string){try{return {ok:true as const,value:JSON.parse(s)}}catch(e){return {ok:false as const,error:e}}}
+export function extractFirstJsonBlock(s:string){const text=s.replace(/```[\s\S]*?```/g,m=>stripCodeFences(m)).replace(/<\/?[^>]+>/g,'').trim();const start=text.indexOf('{');if(start===-1)return null;let depth=0;for(let i=start;i<text.length;i++){const ch=text[i];if(ch==='{')depth++;if(ch==='}')depth--;if(depth===0){const candidate=text.slice(start,i+1);const parsed=safeJsonParse(candidate);if(parsed.ok)return candidate;}}return null;}
